@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net"
+
 	desc "github.com/igorezka/auth/pkg/user_v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
 )
 
 const grpcPort = 50051
