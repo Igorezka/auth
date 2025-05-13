@@ -36,5 +36,5 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.1.6
+          version: v1.64.8
           args: --timeout=30m --config=./.golangci.pipeline.yaml
