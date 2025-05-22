@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"flag"
 	"log"
 	"net"
 
 	"github.com/brianvoe/gofakeit"
+	"github.com/igorezka/auth/internal/config"
+	"github.com/igorezka/auth/internal/config/env"
 	desc "github.com/igorezka/auth/pkg/user_v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -14,7 +16,11 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-const grpcPort = 50051
+var configPath string
+
+func init() {
+	flag.StringVar(&configPath, "config-path", ".env", "path to config file")
+}
 
 type server struct {
 	desc.UnimplementedUserV1Server
@@ -58,7 +64,24 @@ func (*server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empt
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
+	flag.Parse()
+
+	err := config.Load(configPath)
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
+
+	grpcConfig, err := env.NewGRPCConfig()
+	if err != nil {
+		log.Fatalf("failed to get grpc config: %v", err)
+	}
+
+	_, err = env.NewPgConfig()
+	if err != nil {
+		log.Fatalf("failed to get pg config: %v", err)
+	}
+
+	lis, err := net.Listen("tcp", grpcConfig.Address())
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
