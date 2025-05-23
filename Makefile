@@ -3,8 +3,6 @@ include .env
 LOCAL_BIN:=$(CURDIR)/bin
 APP_NAME:=auth-service
 VERSION:=0.0.2
-REGISTRY_HOST:=cr.selcloud.ru
-REGISTRY_NAME:=igorezka-primary
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.6
