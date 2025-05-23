@@ -3,8 +3,9 @@ package env
 import (
 	"errors"
 	"fmt"
-	"github.com/igorezka/auth/internal/config"
 	"os"
+
+	"github.com/igorezka/auth/internal/config"
 )
 
 var _ config.PGConfig = (*pgConfig)(nil)
