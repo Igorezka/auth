@@ -10,6 +10,7 @@ import (
 	"github.com/igorezka/auth/internal/config"
 	"github.com/igorezka/auth/internal/config/env"
 	desc "github.com/igorezka/auth/pkg/user_v1"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -64,6 +65,8 @@ func (*server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empt
 }
 
 func main() {
+	ctx := context.Background()
+
 	flag.Parse()
 
 	err := config.Load(configPath)
@@ -76,10 +79,16 @@ func main() {
 		log.Fatalf("failed to get grpc config: %v", err)
 	}
 
-	_, err = env.NewPgConfig()
+	pgConfig, err := env.NewPgConfig()
 	if err != nil {
 		log.Fatalf("failed to get pg config: %v", err)
 	}
+
+	pool, err := pgxpool.New(ctx, pgConfig.DSN())
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+	defer pool.Close()
 
 	lis, err := net.Listen("tcp", grpcConfig.Address())
 	if err != nil {
