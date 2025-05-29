@@ -33,10 +33,14 @@ message User {
   google.protobuf.Timestamp updated_at = 4;
 }
 
-message CreateRequest {
+message UserCreate {
   UserInfo info = 1;
   string password = 2;
   string password_confirm = 3;
+}
+
+message CreateRequest {
+  UserCreate userCreate = 1;
 }
 
 message CreateResponse {

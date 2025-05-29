@@ -23,15 +23,15 @@ type UserInfo struct {
 // Role represents a user role with an integer value.
 type Role int32
 
-// UserCreate represents a user creation with Name, Email, Role, and PasswordHash fields.
+// UserCreate represents a user creation entity with Name, Email, Role, and Password fields.
 type UserCreate struct {
-	Name         string
-	Email        string
-	Role         Role
-	PasswordHash []byte
+	Name     string
+	Email    string
+	Role     Role
+	Password string
 }
 
-// UserUpdate represents a user update with Name, Email, and Role fields.
+// UserUpdate represents a user update entity with Name, Email, and Role fields.
 type UserUpdate struct {
 	Name  *string
 	Email *string

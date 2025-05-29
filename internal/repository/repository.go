@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 
-	"github.com/igorezka/auth/internal/repository/user/model"
-	desc "github.com/igorezka/auth/pkg/user_v1"
+	"github.com/igorezka/auth/internal/model"
 )
 
+// UserRepository represents a repository for user entities.
 type UserRepository interface {
 	Create(ctx context.Context, userCreate *model.UserCreate) (int64, error)
-	Get(ctx context.Context, id int64) (*desc.User, error)
-	Update(ctx context.Context, user *desc.UpdateRequest) error
+	Get(ctx context.Context, id int64) (*model.User, error)
+	Update(ctx context.Context, id int64, userUpdate *model.UserUpdate) error
 	Delete(ctx context.Context, id int64) error
 }

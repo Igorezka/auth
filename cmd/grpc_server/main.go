@@ -7,14 +7,18 @@ import (
 	"net"
 
 	"github.com/brianvoe/gofakeit"
-	"github.com/igorezka/auth/internal/config"
-	"github.com/igorezka/auth/internal/config/env"
-	desc "github.com/igorezka/auth/pkg/user_v1"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/igorezka/auth/internal/config"
+	"github.com/igorezka/auth/internal/config/env"
+	"github.com/igorezka/auth/internal/converter"
+	"github.com/igorezka/auth/internal/repository"
+	"github.com/igorezka/auth/internal/repository/user"
+	desc "github.com/igorezka/auth/pkg/user_v1"
 )
 
 var configPath string
@@ -24,18 +28,24 @@ func init() {
 }
 
 type server struct {
+	userRepository repository.UserRepository
 	desc.UnimplementedUserV1Server
 }
 
-func (*server) Create(_ context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	log.Printf("User name: %s", req.GetInfo().GetName())
+func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
+	log.Printf("User name: %s", req.GetUserCreate().GetInfo().GetName())
+
+	id, err := s.userRepository.Create(ctx, converter.ToUserCreateFromDesc(req.GetUserCreate()))
+	if err != nil {
+		return nil, err
+	}
 
 	return &desc.CreateResponse{
-		Id: gofakeit.Int64(),
+		Id: id,
 	}, nil
 }
 
-func (*server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+func (s *server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	log.Printf("User id: %d", req.GetId())
 
 	return &desc.GetResponse{
@@ -52,13 +62,13 @@ func (*server) Get(_ context.Context, req *desc.GetRequest) (*desc.GetResponse, 
 	}, nil
 }
 
-func (*server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
+func (s *server) Update(_ context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
 	log.Printf("user id: %d", req.GetId())
 
 	return &emptypb.Empty{}, nil
 }
 
-func (*server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
+func (s *server) Delete(_ context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
 	log.Printf("user id: %d", req.GetId())
 
 	return &emptypb.Empty{}, nil
@@ -97,7 +107,9 @@ func main() {
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterUserV1Server(s, &server{})
+	desc.RegisterUserV1Server(s, &server{
+		userRepository: user.NewRepository(pool),
+	})
 
 	log.Printf("server listening at %v", lis.Addr())
 
