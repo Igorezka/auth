@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/igorezka/auth/internal/config"
+	def "github.com/igorezka/auth/internal/config"
 )
+
+var _ def.PGConfig = (*pgConfig)(nil)
 
 const (
 	pgHostEnvName     = "PG_HOST"
@@ -21,7 +23,7 @@ type pgConfig struct {
 }
 
 // NewPgConfig pg config struct constructor
-func NewPgConfig() (config.PGConfig, error) {
+func NewPgConfig() (*pgConfig, error) {
 	host := os.Getenv(pgHostEnvName)
 	if len(host) == 0 {
 		return nil, errors.New("pg host not found")

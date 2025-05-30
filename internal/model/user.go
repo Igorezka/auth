@@ -35,5 +35,5 @@ type UserCreate struct {
 type UserUpdate struct {
 	Name  *string
 	Email *string
-	Role  *Role
+	Role  Role
 }
