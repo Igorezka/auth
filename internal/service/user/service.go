@@ -11,6 +11,7 @@ type serv struct {
 	userRepository repository.UserRepository
 }
 
+// NewService creates a new user service.
 func NewService(userRepository repository.UserRepository) *serv {
 	return &serv{
 		userRepository: userRepository,
