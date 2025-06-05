@@ -6,6 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
+	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/model"
 )
 
@@ -31,7 +32,12 @@ func (r *repo) Update(ctx context.Context, id int64, userUpdate *model.UserUpdat
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     "user_repository.Update",
+		QueryRaw: query,
+	}
+
+	_, err = r.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
 		return err
 	}

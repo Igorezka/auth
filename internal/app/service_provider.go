@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-
 	"github.com/igorezka/auth/internal/api/user"
+	"github.com/igorezka/auth/internal/client/db"
+	"github.com/igorezka/auth/internal/client/db/pg"
 	"github.com/igorezka/auth/internal/closer"
 	"github.com/igorezka/auth/internal/config"
 	"github.com/igorezka/auth/internal/config/env"
@@ -20,7 +20,7 @@ type serviceProvider struct {
 	pgConfig   config.PGConfig
 	grpcConfig config.GRPCConfig
 
-	dbClient       *pgxpool.Pool
+	dbClient       db.Client
 	userRepository repository.UserRepository
 
 	userService service.UserService
@@ -57,21 +57,18 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.grpcConfig
 }
 
-func (s *serviceProvider) DBClient(ctx context.Context) *pgxpool.Pool {
+func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
 	if s.dbClient == nil {
-		cl, err := pgxpool.New(ctx, s.PGConfig().DSN())
+		cl, err := pg.New(ctx, s.PGConfig().DSN())
 		if err != nil {
 			log.Fatalf("failed to create db client: %s", err.Error())
 		}
 
-		err = cl.Ping(ctx)
+		err = cl.DB().Ping(ctx)
 		if err != nil {
 			log.Fatalf("failed to ping db: %s", err.Error())
 		}
-		closer.Add(func() error {
-			cl.Close()
-			return nil
-		})
+		closer.Add(cl.Close)
 
 		s.dbClient = cl
 	}

@@ -5,6 +5,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
+	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/repository/user/converter"
 )
@@ -23,8 +24,13 @@ func (r *repo) Create(ctx context.Context, userCreate *model.UserCreate) (int64,
 		return 0, err
 	}
 
+	q := db.Query{
+		Name:     "user_repository.Create",
+		QueryRaw: query,
+	}
+
 	var id int64
-	err = r.db.QueryRow(ctx, query, args...).Scan(&id)
+	err = r.db.DB().QueryRowContext(ctx, q, args...).Scan(&id)
 	if err != nil {
 		return 0, err
 	}

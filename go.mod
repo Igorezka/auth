@@ -4,10 +4,11 @@ go 1.24.3
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/brianvoe/gofakeit v3.18.0+incompatible
+	github.com/georgysavva/scany/v2 v2.1.4
 	github.com/golang/protobuf v1.5.4
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/joho/godotenv v1.5.1
+	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.72.0
 	google.golang.org/protobuf v1.36.6
 )

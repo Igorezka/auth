@@ -5,6 +5,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
+	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/repository/user/converter"
 	modelRepo "github.com/igorezka/auth/internal/repository/user/model"
@@ -22,9 +23,13 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 		return nil, err
 	}
 
+	q := db.Query{
+		Name:     "user_repository.Get",
+		QueryRaw: query,
+	}
+
 	var user modelRepo.User
-	err = r.db.QueryRow(ctx, query, args...).
-		Scan(&user.ID, &user.Info.Name, &user.Info.Email, &user.Info.Role, &user.CreatedAt, &user.UpdatedAt)
+	err = r.db.DB().ScanOneContext(ctx, &user, q, args...)
 	if err != nil {
 		return nil, err
 	}

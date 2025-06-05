@@ -1,11 +1,7 @@
 package user
 
 import (
-	"context"
-
-	sq "github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v5/pgxpool"
-
+	"github.com/igorezka/auth/internal/client/db"
 	def "github.com/igorezka/auth/internal/repository"
 )
 
@@ -24,28 +20,10 @@ const (
 )
 
 type repo struct {
-	db *pgxpool.Pool
+	db db.Client
 }
 
 // NewRepository creates new user repository
-func NewRepository(db *pgxpool.Pool) *repo {
+func NewRepository(db db.Client) *repo {
 	return &repo{db: db}
-}
-
-func (r *repo) Delete(ctx context.Context, id int64) error {
-	builder := sq.Delete(tableName).
-		PlaceholderFormat(sq.Dollar).
-		Where(sq.Eq{idColumn: id})
-
-	query, args, err := builder.ToSql()
-	if err != nil {
-		return err
-	}
-
-	_, err = r.db.Exec(ctx, query, args...)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
