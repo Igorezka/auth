@@ -5,8 +5,6 @@ import (
 	def "github.com/igorezka/auth/internal/repository"
 )
 
-var _ def.UserRepository = (*repo)(nil)
-
 const (
 	tableName = "users"
 
@@ -24,6 +22,6 @@ type repo struct {
 }
 
 // NewRepository creates new user repository
-func NewRepository(db db.Client) *repo {
+func NewRepository(db db.Client) def.UserRepository {
 	return &repo{db: db}
 }

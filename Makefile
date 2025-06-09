@@ -9,6 +9,7 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install -mod=mod google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
 	GOBIN=$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
 	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.24.3
+	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/minimock@v3.4.5
 
 migration-status:
 	$(LOCAL_BIN)/goose -dir ${MIGRATION_DIR} postgres "host=${POSTGRES_HOST} port=${POSTGRES_PORT} dbname=${POSTGRES_DB} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} sslmode=disable" status -v

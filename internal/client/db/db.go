@@ -7,16 +7,26 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+type Handler func(ctx context.Context) error
+
 // Client is a client to work with the database
 type Client interface {
 	DB() DB
 	Close() error
 }
 
+type TxManager interface {
+	ReadCommitted(ctx context.Context, f Handler) error
+}
+
 // Query wrapper over the request, contains the name of the query and the query itself
 type Query struct {
 	Name     string
 	QueryRaw string
+}
+
+type Transactor interface {
+	BeginTx(ctx context.Context, tx pgx.TxOptions) (pgx.Tx, error)
 }
 
 // SQLExecer combines NamedExecer and QueryExecer
@@ -46,6 +56,7 @@ type Pinger interface {
 // DB interface for working with the database
 type DB interface {
 	SQLExecer
+	Transactor
 	Pinger
 	Close()
 }
