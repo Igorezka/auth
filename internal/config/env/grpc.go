@@ -5,10 +5,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/igorezka/auth/internal/config"
+	def "github.com/igorezka/auth/internal/config"
 )
-
-var _ config.GRPCConfig = (*grpcConfig)(nil)
 
 const (
 	grpcHostEnvName = "GRPC_HOST"
@@ -21,7 +19,7 @@ type grpcConfig struct {
 }
 
 // NewGRPCConfig grpc config struct constructor
-func NewGRPCConfig() (*grpcConfig, error) {
+func NewGRPCConfig() (def.GRPCConfig, error) {
 	host := os.Getenv(grpcHostEnvName)
 	if len(host) == 0 {
 		return nil, errors.New("grpc host not found")
