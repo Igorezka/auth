@@ -2,9 +2,9 @@ package transaction
 
 import (
 	"context"
-	"github.com/pkg/errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/pkg/errors"
 
 	def "github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/client/db/pg"
@@ -14,6 +14,7 @@ type manager struct {
 	db def.Transactor
 }
 
+// NewTransactionManager constructs a new instance transaction manager
 func NewTransactionManager(db def.Transactor) def.TxManager {
 	return &manager{
 		db: db,

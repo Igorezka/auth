@@ -2,68 +2,77 @@ package tests
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/igorezka/auth/internal/api/user"
+	userApi "github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/service"
 	serviceMocks "github.com/igorezka/auth/internal/service/mocks"
 	desc "github.com/igorezka/auth/pkg/user_v1"
 )
 
-func TestCreate(t *testing.T) {
+func TestGet(t *testing.T) {
 	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
-		req *desc.CreateRequest
+		req *desc.GetRequest
 	}
 
 	var (
 		ctx = context.Background()
 		mc  = minimock.NewController(t)
 
-		id       = gofakeit.Int64()
-		name     = gofakeit.Name()
-		email    = gofakeit.Email()
-		role     = gofakeit.IntRange(0, 1)
-		password = gofakeit.Password(true, true, true, false, false, 3)
+		id        = gofakeit.Int64()
+		name      = gofakeit.Name()
+		email     = gofakeit.Email()
+		role      = gofakeit.IntRange(0, 1)
+		createdAt = time.Now()
+		updatedAt = time.Now()
 
 		serviceErr = fmt.Errorf("service error")
 
-		req = &desc.CreateRequest{
-			UserCreate: &desc.UserCreate{
+		req = &desc.GetRequest{
+			Id: id,
+		}
+
+		user = &model.User{
+			ID: id,
+			Info: model.UserInfo{
+				Name:  name,
+				Email: email,
+				Role:  model.Role(role),
+			},
+			CreatedAt: createdAt,
+			UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
+		}
+
+		res = &desc.GetResponse{
+			User: &desc.User{
+				Id: id,
 				Info: &desc.UserInfo{
 					Name:  name,
 					Email: email,
 					Role:  desc.Role(role),
 				},
-				Password:        password,
-				PasswordConfirm: password,
+				CreatedAt: timestamppb.New(createdAt),
+				UpdatedAt: timestamppb.New(updatedAt),
 			},
-		}
-
-		userCreate = &model.UserCreate{
-			Name:     name,
-			Email:    email,
-			Role:     model.Role(role),
-			Password: password,
-		}
-
-		res = &desc.CreateResponse{
-			Id: id,
 		}
 	)
 
 	tests := []struct {
 		name            string
 		args            args
-		want            *desc.CreateResponse
+		want            *desc.GetResponse
 		err             error
 		userServiceMock userServiceMockFunc
 	}{
@@ -77,7 +86,7 @@ func TestCreate(t *testing.T) {
 			err:  nil,
 			userServiceMock: func(ms *minimock.Controller) service.UserService {
 				mock := serviceMocks.NewUserServiceMock(ms)
-				mock.CreateMock.Expect(ctx, userCreate).Return(id, nil)
+				mock.GetMock.Expect(ctx, id).Return(user, nil)
 				return mock
 			},
 		},
@@ -91,7 +100,7 @@ func TestCreate(t *testing.T) {
 			err:  serviceErr,
 			userServiceMock: func(ms *minimock.Controller) service.UserService {
 				mock := serviceMocks.NewUserServiceMock(ms)
-				mock.CreateMock.Expect(ctx, userCreate).Return(0, serviceErr)
+				mock.GetMock.Expect(ctx, id).Return(nil, serviceErr)
 				return mock
 			},
 		},
@@ -101,9 +110,9 @@ func TestCreate(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			userServiceMock := tt.userServiceMock(mc)
-			api := user.NewImplementation(userServiceMock)
+			api := userApi.NewImplementation(userServiceMock)
 
-			resHandler, err := api.Create(tt.args.ctx, tt.args.req)
+			resHandler, err := api.Get(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)
 			require.Equal(t, tt.want, resHandler)
 		})

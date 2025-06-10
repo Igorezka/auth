@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// Handler function in tx manager
 type Handler func(ctx context.Context) error
 
 // Client is a client to work with the database
@@ -15,6 +16,7 @@ type Client interface {
 	Close() error
 }
 
+// TxManager interface to manage transactions
 type TxManager interface {
 	ReadCommitted(ctx context.Context, f Handler) error
 }
@@ -25,6 +27,7 @@ type Query struct {
 	QueryRaw string
 }
 
+// Transactor interface for work with transactions
 type Transactor interface {
 	BeginTx(ctx context.Context, tx pgx.TxOptions) (pgx.Tx, error)
 }

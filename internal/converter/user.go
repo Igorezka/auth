@@ -1,9 +1,10 @@
 package converter
 
 import (
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/igorezka/auth/internal/model"
 	desc "github.com/igorezka/auth/pkg/user_v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ToUserCreateFromDesc converts the UserCreate model from proto-model to a business logic model.

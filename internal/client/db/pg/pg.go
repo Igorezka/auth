@@ -13,6 +13,7 @@ import (
 
 type key string
 
+// TxKey - transaction key in context
 const (
 	TxKey key = "tx"
 )
@@ -85,6 +86,7 @@ func (p *pg) Close() {
 	p.dbc.Close()
 }
 
+// MakeContextTx store transaction in context
 func MakeContextTx(ctx context.Context, tx pgx.Tx) context.Context {
 	return context.WithValue(ctx, TxKey, tx)
 }

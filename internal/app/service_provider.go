@@ -2,12 +2,12 @@ package app
 
 import (
 	"context"
-	"github.com/igorezka/auth/internal/client/db/transaction"
 	"log"
 
 	"github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/client/db/pg"
+	"github.com/igorezka/auth/internal/client/db/transaction"
 	"github.com/igorezka/auth/internal/closer"
 	"github.com/igorezka/auth/internal/config"
 	"github.com/igorezka/auth/internal/config/env"

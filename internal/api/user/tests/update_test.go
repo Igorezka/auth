@@ -8,6 +8,8 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/model"
@@ -16,54 +18,45 @@ import (
 	desc "github.com/igorezka/auth/pkg/user_v1"
 )
 
-func TestCreate(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
-		req *desc.CreateRequest
+		req *desc.UpdateRequest
 	}
 
 	var (
 		ctx = context.Background()
 		mc  = minimock.NewController(t)
 
-		id       = gofakeit.Int64()
-		name     = gofakeit.Name()
-		email    = gofakeit.Email()
-		role     = gofakeit.IntRange(0, 1)
-		password = gofakeit.Password(true, true, true, false, false, 3)
+		id    = gofakeit.Int64()
+		name  = gofakeit.Name()
+		email = gofakeit.Email()
+		role  = gofakeit.IntRange(0, 1)
 
 		serviceErr = fmt.Errorf("service error")
 
-		req = &desc.CreateRequest{
-			UserCreate: &desc.UserCreate{
-				Info: &desc.UserInfo{
-					Name:  name,
-					Email: email,
-					Role:  desc.Role(role),
-				},
-				Password:        password,
-				PasswordConfirm: password,
+		req = &desc.UpdateRequest{
+			Id: id,
+			UserUpdate: &desc.UserUpdate{
+				Name:  wrapperspb.String(name),
+				Email: wrapperspb.String(email),
+				Role:  desc.Role(role),
 			},
 		}
 
-		userCreate = &model.UserCreate{
-			Name:     name,
-			Email:    email,
-			Role:     model.Role(role),
-			Password: password,
-		}
-
-		res = &desc.CreateResponse{
-			Id: id,
+		userUpdate = &model.UserUpdate{
+			Name:  &name,
+			Email: &email,
+			Role:  model.Role(role),
 		}
 	)
 
 	tests := []struct {
 		name            string
 		args            args
-		want            *desc.CreateResponse
+		want            *emptypb.Empty
 		err             error
 		userServiceMock userServiceMockFunc
 	}{
@@ -73,11 +66,11 @@ func TestCreate(t *testing.T) {
 				ctx: ctx,
 				req: req,
 			},
-			want: res,
+			want: &emptypb.Empty{},
 			err:  nil,
 			userServiceMock: func(ms *minimock.Controller) service.UserService {
 				mock := serviceMocks.NewUserServiceMock(ms)
-				mock.CreateMock.Expect(ctx, userCreate).Return(id, nil)
+				mock.UpdateMock.Expect(ctx, req.Id, userUpdate).Return(nil)
 				return mock
 			},
 		},
@@ -91,7 +84,7 @@ func TestCreate(t *testing.T) {
 			err:  serviceErr,
 			userServiceMock: func(ms *minimock.Controller) service.UserService {
 				mock := serviceMocks.NewUserServiceMock(ms)
-				mock.CreateMock.Expect(ctx, userCreate).Return(0, serviceErr)
+				mock.UpdateMock.Expect(ctx, req.Id, userUpdate).Return(serviceErr)
 				return mock
 			},
 		},
@@ -103,7 +96,7 @@ func TestCreate(t *testing.T) {
 			userServiceMock := tt.userServiceMock(mc)
 			api := user.NewImplementation(userServiceMock)
 
-			resHandler, err := api.Create(tt.args.ctx, tt.args.req)
+			resHandler, err := api.Update(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)
 			require.Equal(t, tt.want, resHandler)
 		})
