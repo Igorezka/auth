@@ -25,6 +25,20 @@ check-lint-config:
 lint:
 	$(LOCAL_BIN)/golangci-lint run ./... --config .golangci.pipeline.yaml
 
+test:
+	go clean -testcache
+	go test ./... -covermode count -coverpkg=github.com/igorezka/auth/internal/service/...,github.comgithub.com/igorezka/auth/internal/api/... -count 5
+
+test-coverage:
+	go clean -testcache
+	go test ./... -coverprofile=coverage.tmp.out -covermode count -coverpkg=github.com/igorezka/auth/internal/service/...,github.com/igorezka/auth/internal/api/... -count 5
+	grep -v 'mocks\|config' coverage.tmp.out  > coverage.out
+	rm coverage.tmp.out
+	go tool cover -html=coverage.out -o=coverage.html;
+	go tool cover -func=./coverage.out | grep "total";
+	grep -sqFx "/coverage.out" .gitignore || echo "/coverage.out" >> .gitignore
+	grep -sqFx "/coverage.html" .gitignore || echo "/coverage.html" >> .gitignore
+
 generate:
 	make generate-user-api
 
