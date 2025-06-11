@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/gojuno/minimock/v3"
@@ -20,7 +19,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
+	type userServiceMockFunc func(mc *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
@@ -35,8 +34,8 @@ func TestGet(t *testing.T) {
 		name      = gofakeit.Name()
 		email     = gofakeit.Email()
 		role      = gofakeit.IntRange(0, 1)
-		createdAt = time.Now()
-		updatedAt = time.Now()
+		createdAt = gofakeit.Date()
+		updatedAt = gofakeit.Date()
 
 		serviceErr = fmt.Errorf("service error")
 
@@ -84,8 +83,8 @@ func TestGet(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id).Return(user, nil)
 				return mock
 			},
@@ -98,8 +97,8 @@ func TestGet(t *testing.T) {
 			},
 			want: nil,
 			err:  serviceErr,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.GetMock.Expect(ctx, id).Return(nil, serviceErr)
 				return mock
 			},

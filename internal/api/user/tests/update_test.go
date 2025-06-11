@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	"github.com/igorezka/auth/internal/api/user"
+	userApi "github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/service"
 	serviceMocks "github.com/igorezka/auth/internal/service/mocks"
@@ -19,7 +19,7 @@ import (
 )
 
 func TestUpdate(t *testing.T) {
-	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
+	type userServiceMockFunc func(mc *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
@@ -68,8 +68,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, req.Id, userUpdate).Return(nil)
 				return mock
 			},
@@ -82,8 +82,8 @@ func TestUpdate(t *testing.T) {
 			},
 			want: nil,
 			err:  serviceErr,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.UpdateMock.Expect(ctx, req.Id, userUpdate).Return(serviceErr)
 				return mock
 			},
@@ -94,7 +94,7 @@ func TestUpdate(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			userServiceMock := tt.userServiceMock(mc)
-			api := user.NewImplementation(userServiceMock)
+			api := userApi.NewImplementation(userServiceMock)
 
 			resHandler, err := api.Update(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)

@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/igorezka/auth/internal/api/user"
+	userApi "github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/service"
 	serviceMocks "github.com/igorezka/auth/internal/service/mocks"
 	desc "github.com/igorezka/auth/pkg/user_v1"
 )
 
 func TestDelete(t *testing.T) {
-	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
+	type userServiceMockFunc func(mc *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
@@ -52,8 +52,8 @@ func TestDelete(t *testing.T) {
 			},
 			want: &emptypb.Empty{},
 			err:  nil,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(nil)
 				return mock
 			},
@@ -66,8 +66,8 @@ func TestDelete(t *testing.T) {
 			},
 			want: nil,
 			err:  serviceErr,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.DeleteMock.Expect(ctx, id).Return(serviceErr)
 				return mock
 			},
@@ -78,7 +78,7 @@ func TestDelete(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			userServiceMock := tt.userServiceMock(mc)
-			api := user.NewImplementation(userServiceMock)
+			api := userApi.NewImplementation(userServiceMock)
 
 			resHandler, err := api.Delete(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)

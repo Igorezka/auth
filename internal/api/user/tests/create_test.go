@@ -9,7 +9,7 @@ import (
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
 
-	"github.com/igorezka/auth/internal/api/user"
+	userApi "github.com/igorezka/auth/internal/api/user"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/service"
 	serviceMocks "github.com/igorezka/auth/internal/service/mocks"
@@ -17,7 +17,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	type userServiceMockFunc func(ms *minimock.Controller) service.UserService
+	type userServiceMockFunc func(mc *minimock.Controller) service.UserService
 
 	type args struct {
 		ctx context.Context
@@ -32,7 +32,7 @@ func TestCreate(t *testing.T) {
 		name     = gofakeit.Name()
 		email    = gofakeit.Email()
 		role     = gofakeit.IntRange(0, 1)
-		password = gofakeit.Password(true, true, true, false, false, 3)
+		password = gofakeit.Password(true, true, true, false, false, 16)
 
 		serviceErr = fmt.Errorf("service error")
 
@@ -75,8 +75,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: res,
 			err:  nil,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, userCreate).Return(id, nil)
 				return mock
 			},
@@ -89,8 +89,8 @@ func TestCreate(t *testing.T) {
 			},
 			want: nil,
 			err:  serviceErr,
-			userServiceMock: func(ms *minimock.Controller) service.UserService {
-				mock := serviceMocks.NewUserServiceMock(ms)
+			userServiceMock: func(mc *minimock.Controller) service.UserService {
+				mock := serviceMocks.NewUserServiceMock(mc)
 				mock.CreateMock.Expect(ctx, userCreate).Return(0, serviceErr)
 				return mock
 			},
@@ -101,7 +101,7 @@ func TestCreate(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			userServiceMock := tt.userServiceMock(mc)
-			api := user.NewImplementation(userServiceMock)
+			api := userApi.NewImplementation(userServiceMock)
 
 			resHandler, err := api.Create(tt.args.ctx, tt.args.req)
 			require.Equal(t, tt.err, err)
