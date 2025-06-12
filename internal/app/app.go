@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/igorezka/auth/internal/closer"
 	"github.com/igorezka/auth/internal/config"
 	desc "github.com/igorezka/auth/pkg/user_v1"
+	"github.com/igorezka/zdb_platform_common/pkg/closer"
 )
 
 // App represents the app

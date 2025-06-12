@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/igorezka/auth/internal/client/db"
 	def "github.com/igorezka/auth/internal/repository"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
 )
 
 const (

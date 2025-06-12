@@ -9,12 +9,12 @@ import (
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
 
-	"github.com/igorezka/auth/internal/client/db"
-	dbClientMocks "github.com/igorezka/auth/internal/client/db/mocks"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/repository"
 	repositoryMocks "github.com/igorezka/auth/internal/repository/mocks"
 	userService "github.com/igorezka/auth/internal/service/user"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
+	dbClientMocks "github.com/igorezka/zdb_platform_common/pkg/client/db/mocks"
 )
 
 func TestCreate(t *testing.T) {

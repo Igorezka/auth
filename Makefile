@@ -36,8 +36,6 @@ test-coverage:
 	rm coverage.tmp.out
 	go tool cover -html=coverage.out -o=coverage.html;
 	go tool cover -func=./coverage.out | grep "total";
-	grep -sqFx "/coverage.out" .gitignore || echo "/coverage.out" >> .gitignore
-	grep -sqFx "/coverage.html" .gitignore || echo "/coverage.html" >> .gitignore
 
 generate:
 	make generate-user-api

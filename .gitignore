@@ -4,5 +4,4 @@ bin/
 !.env.example
 /coverage.out
 /coverage.html
-/coverage.out
-/coverage.html
+

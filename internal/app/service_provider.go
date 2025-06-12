@@ -5,16 +5,16 @@ import (
 	"log"
 
 	"github.com/igorezka/auth/internal/api/user"
-	"github.com/igorezka/auth/internal/client/db"
-	"github.com/igorezka/auth/internal/client/db/pg"
-	"github.com/igorezka/auth/internal/client/db/transaction"
-	"github.com/igorezka/auth/internal/closer"
 	"github.com/igorezka/auth/internal/config"
 	"github.com/igorezka/auth/internal/config/env"
 	"github.com/igorezka/auth/internal/repository"
 	userRepository "github.com/igorezka/auth/internal/repository/user"
 	"github.com/igorezka/auth/internal/service"
 	userService "github.com/igorezka/auth/internal/service/user"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db/pg"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db/transaction"
+	"github.com/igorezka/zdb_platform_common/pkg/closer"
 )
 
 type serviceProvider struct {

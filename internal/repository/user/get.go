@@ -5,10 +5,10 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
-	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/repository/user/converter"
 	modelRepo "github.com/igorezka/auth/internal/repository/user/model"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
 )
 
 func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {

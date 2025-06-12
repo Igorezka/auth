@@ -5,7 +5,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
-	"github.com/igorezka/auth/internal/client/db"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
 )
 
 func (r *repo) Delete(ctx context.Context, id int64) error {

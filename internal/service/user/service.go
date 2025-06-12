@@ -1,9 +1,9 @@
 package user
 
 import (
-	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/repository"
 	def "github.com/igorezka/auth/internal/service"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
 )
 
 type serv struct {

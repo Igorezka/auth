@@ -5,9 +5,9 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
-	"github.com/igorezka/auth/internal/client/db"
 	"github.com/igorezka/auth/internal/model"
 	"github.com/igorezka/auth/internal/repository/user/converter"
+	"github.com/igorezka/zdb_platform_common/pkg/client/db"
 )
 
 func (r *repo) Create(ctx context.Context, userCreate *model.UserCreate) (int64, error) {
